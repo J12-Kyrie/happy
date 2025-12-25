@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Merry Christmas</title>
+    <style>
+        :root {
+            --christmas-red: #D42426;
+            --christmas-green: #165B33;
+        }
+
+        body {
+            font-family: -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom, #2c5364, #203a43, #0f2027);
+            color: #333;
+            min-height: 100vh;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        #snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: var(--christmas-green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .upload-area input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            background: var(--christmas-red);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:active,
+        button.pressing {
+            transform: scale(0.96);
+            background: #b91c1e;
+        }
+
+        button:disabled {
+            background: #94a3b8;
+            transform: none;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: none;
+            background: #000;
+        }
+
+        /* 修复：给 audio 增加样式，确保显示时美观 */
+        audio {
+            width: 100%;
+            margin-top: 15px;
+            display: none;
+            /* 默认隐藏，有数据时显示 */
+            outline: none;
+        }
+
+        #videoStatus,
+        #audioStatus {
+            margin-top: 10px;
+            font-size: 13px;
+            text-align: center;
+            color: #cbd5e0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="snow-container"></div>
+    <div class="main-wrapper">
+        <header>
+            <h1>🎅 Merry Christmas 🎄</h1>
+            <p>12</p>
+        </header>
+
+        <div class="card">
+            <h2>🎥 圣诞魔法生成器</h2>
+            <div class="upload-area">
+                <span id="fileLabel">点击上传照片</span>
+                <input type="file" id="imageInput" accept="image/*" onchange="updateFileName()">
+            </div>
+            <button onclick="uploadAndGenerate()" id="videoBtn">✨ 生成魔法视频</button>
+            <div id="videoStatus" style="color:#666"></div>
+            <video id="resultVideo" controls playsinline></video>
+        </div>
+
+        <div class="card">
+            <h2>🎙️ 圣诞老人热线</h2>
+            <button id="recordBtn">🎤 按住说话</button>
+            <div id="audioStatus" style="color:#666">准备就绪</div>
+
+            <audio id="audioPlayer" controls playsinline></audio>
+        </div>
+    </div>
+
+    <script>
+        // 雪花特效
+        function createSnow() {
+            const c = document.getElementById('snow-container');
+            for (let i = 0; i < 40; i++) {
+                const s = document.createElement('div');
+                s.className = 'snowflake';
+                const size = Math.random() * 5 + 2;
+                s.style.width = size + 'px'; s.style.height = size + 'px';
+                s.style.left = Math.random() * 100 + 'vw';
+                s.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                s.style.animationDelay = Math.random() * 5 + 's';
+                c.appendChild(s);
+            }
+        }
+        createSnow();
+
+        function updateFileName() {
+            const input = document.getElementById('imageInput');
+            if (input.files[0]) document.getElementById('fileLabel').innerText = "📸 " + input.files[0].name;
+        }
+
+        async function uploadAndGenerate() {
+            const btn = document.getElementById('videoBtn');
+            const file = document.getElementById('imageInput').files[0];
+            const status = document.getElementById('videoStatus');
+            const vid = document.getElementById('resultVideo');
+
+            if (!file) return alert("请先上传照片");
+
+            btn.disabled = true; btn.innerText = "📤 上传中...";
+            vid.style.display = 'none';
+
+            const fd = new FormData(); fd.append('image', file);
+
+            try {
+                const res = await fetch('/generate_video', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.id) {
+                    status.innerText = "✅ 任务已提交，正在制作...";
+                    poll(data.id);
+                } else throw new Error(data.error);
+            } catch (e) {
+                status.innerText = "❌ " + e.message;
+                btn.disabled = false; btn.innerText = "✨ 生成魔法视频";
+            }
+        }
+
+        async function poll(taskId) {
+            const status = document.getElementById('videoStatus');
+            const vid = document.getElementById('resultVideo');
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/check_video_status?task_id=${taskId}`);
+                    const data = await res.json();
+
+                    if (data.status === 'SUCCEEDED') {
+                        clearInterval(interval);
+                        status.innerText = "🎉 魔法完成！";
+                        vid.src = data.result.video_url;
+                        vid.style.display = 'block';
+                        // 视频自动播放尝试
+                        vid.play().catch(e => console.log("Video Auto-play blocked"));
+                        document.getElementById('videoBtn').disabled = false;
+                        document.getElementById('videoBtn').innerText = "✨ 再做一张";
+                    } else if (data.status === 'FAILED') {
+                        clearInterval(interval);
+                        status.innerText = "❌ 失败: " + data.error;
+                        document.getElementById('videoBtn').disabled = false;
+                    } else {
+                        status.innerText = "⏳ 制作中... (" + data.status + ")";
+                    }
+                } catch (e) { console.error(e); }
+            }, 3000);
+        }
+
+        // ================= 语音逻辑 (核心修复) =================
+        const recBtn = document.getElementById('recordBtn');
+        const audStatus = document.getElementById('audioStatus');
+        let recorder, chunks = [];
+
+        async function initAudio() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                recorder = new MediaRecorder(stream);
+                recorder.ondataavailable = e => chunks.push(e.data);
+                recorder.onstop = sendAudio;
+            } catch (e) {
+                audStatus.innerText = "❌ 无法访问麦克风";
+            }
+        }
+        initAudio();
+
+        async function sendAudio() {
+            const blob = new Blob(chunks, { type: 'audio/webm' });
+            chunks = [];
+            audStatus.innerText = "🎅 思考中...";
+
+            const fd = new FormData(); fd.append('audio', blob);
+            try {
+                const res = await fetch('/process_audio', { method: 'POST', body: fd });
+                if (res.ok) {
+                    // 获取音频 Blob
+                    const audBlob = await res.blob();
+                    const url = URL.createObjectURL(audBlob);
+
+                    const player = document.getElementById('audioPlayer');
+                    player.src = url;
+
+                    // 🚨 显示播放器！即使自动播放失败，用户也能看到控件并点击播放
+                    player.style.display = 'block';
+
+                    // 尝试自动播放，如果失败则提示用户
+                    player.play().catch(e => {
+                        console.log("Auto-play blocked, waiting for user interaction");
+                        audStatus.innerText = "🎄 请点击下方播放器收听！";
+                    });
+
+                    audStatus.innerText = "🎄 收到回复！";
+                } else {
+                    audStatus.innerText = "❌ 圣诞老人掉线了";
+                }
+            } catch (e) {
+                console.error(e);
+                audStatus.innerText = "❌ 网络错误";
+            }
+        }
+
+        // 按钮事件绑定
+        function start(e) {
+            if (e.cancelable) e.preventDefault();
+            if (recorder && recorder.state === 'inactive') {
+                chunks = []; recorder.start();
+                recBtn.innerText = "👂 正在聆听...";
+                recBtn.classList.add('pressing');
+                audStatus.innerText = "松开按钮发送";
+            }
+        }
+        function stop(e) {
+            if (e.cancelable) e.preventDefault();
+            if (recorder && recorder.state === 'recording') {
+                recorder.stop();
+                recBtn.innerText = "🎤 按住说话";
+                recBtn.classList.remove('pressing');
+            }
+        }
+
+        recBtn.addEventListener('touchstart', start, { passive: false });
+        recBtn.addEventListener('touchend', stop, { passive: false });
+        recBtn.addEventListener('mousedown', start);
+        recBtn.addEventListener('mouseup', stop);
+    </script>
+</body>
+
+</html>
