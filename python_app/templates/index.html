@@ -1,336 +1,678 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Merry Christmas</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>New Year 2026 | Cinematic Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --christmas-red: #D42426;
-            --christmas-green: #165B33;
+            --deep-space: #050507;
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-gold: #FFD700;
+            --neon-purple: #BC13FE;
+            --text-main: #FFFFFF;
+            --text-muted: rgba(255, 255, 255, 0.6);
         }
 
         body {
-            font-family: -apple-system, sans-serif;
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(to bottom, #2c5364, #203a43, #0f2027);
-            color: #333;
+            background-color: var(--deep-space);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(188, 19, 254, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 40%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
             min-height: 100vh;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        #snow-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-            }
-        }
-
-        .main-wrapper {
-            position: relative;
-            z-index: 1;
-            max-width: 420px;
-            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            align-items: center;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* 动态星尘背景 */
+        .stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMykiLz48L3N2Zz4=');
+            mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 440px;
+            padding: 40px 24px 80px;
+            box-sizing: border-box;
+        }
+
+        /* Header */
         header {
             text-align: center;
-            color: white;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .card h2 {
-            margin: 0 0 15px 0;
-            font-size: 18px;
-            color: var(--christmas-green);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .upload-area {
-            border: 2px dashed #cbd5e0;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 15px;
-            background: #f8fafc;
+            margin-bottom: 50px;
             position: relative;
         }
 
-        .upload-area input {
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 42px;
+            margin: 0;
+            background: linear-gradient(135deg, #FFF 0%, var(--neon-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--glass-surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 32px 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            margin: 0 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #E0E0E0;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-zone.active {
+            border-color: var(--neon-gold);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .upload-zone input {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+            inset: 0;
             opacity: 0;
             cursor: pointer;
         }
 
-        button {
+        .upload-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .upload-icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 12px;
+            filter: grayscale(1);
+            transition: 0.3s;
+        }
+
+        .upload-zone.active .upload-icon {
+            filter: grayscale(0);
+            transform: scale(1.1);
+        }
+
+        /* Buttons */
+        .btn-cinema {
             width: 100%;
-            background: var(--christmas-red);
-            color: white;
+            height: 60px;
             border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 17px;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #1A1A1A, #2A2A2A);
+            color: white;
+            font-family: 'Inter', sans-serif;
             font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
-            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            overflow: hidden;
+            margin-top: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        button:active,
-        button.pressing {
-            transform: scale(0.96);
-            background: #b91c1e;
+        .btn-cinema:hover {
+            border-color: var(--neon-gold);
+            color: var(--neon-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
         }
 
-        button:disabled {
-            background: #94a3b8;
-            transform: none;
+        .btn-record {
+            background: linear-gradient(135deg, #2a0845 0%, #6441A5 100%);
         }
 
-        video {
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 15px;
-            display: none;
-            background: #000;
+        .btn-record:hover {
+            border-color: var(--neon-purple);
+            color: #fff;
+            box-shadow: 0 0 25px rgba(188, 19, 254, 0.4);
         }
 
-        /* 修复：给 audio 增加样式，确保显示时美观 */
+        /* Media */
+        video,
         audio {
             width: 100%;
-            margin-top: 15px;
+            border-radius: 16px;
+            margin-top: 24px;
             display: none;
-            /* 默认隐藏，有数据时显示 */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             outline: none;
         }
 
-        #videoStatus,
-        #audioStatus {
-            margin-top: 10px;
-            font-size: 13px;
+        .status-line {
+            height: 20px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--neon-gold);
             text-align: center;
-            color: #cbd5e0;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            opacity: 0.8;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* =========================================
+           新特性 UI：沉浸式 Overlay 与愿望气泡
+        ========================================= */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            overflow: hidden;
+            /* 防止气泡溢出滚动 */
+        }
+
+        /* 烟花 Canvas (层级在气泡之下) */
+        #fireworks {
+            position: absolute;
+            inset: 0;
+            opacity: 0.9;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 加载环与数字 (层级最高) */
+        .countdown-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 101;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--neon-gold);
+            border-left-color: var(--neon-purple);
+            animation: spin 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            animation-duration: 2s;
+        }
+
+        .ring:nth-child(2) {
+            width: 70%;
+            height: 70%;
+            animation-duration: 1.5s;
+            border-top-color: var(--neon-purple);
+            border-left-color: transparent;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .big-num {
+            font-family: 'Cinzel', serif;
+            font-size: 48px;
+            color: #fff;
+            z-index: 2;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .loading-msg {
+            margin-top: 40px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            font-size: 14px;
+            z-index: 101;
+        }
+
+        /* ✨ 新增：暖冬愿望上升气泡样式 */
+        .wish-bubble-riser {
+            position: absolute;
+            bottom: -60px;
+            /* 从屏幕外开始 */
+            background: rgba(255, 215, 0, 0.1);
+            /* 微金色玻璃感 */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow:
+                inset 0 0 10px rgba(255, 215, 0, 0.1),
+                0 0 15px rgba(188, 19, 254, 0.2);
+            /* 紫金色微光 */
+            border-radius: 30px;
+            padding: 10px 24px;
+            color: #fff;
+            font-size: 13px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 50;
+            /* 在背景和文字之间 */
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        /* 气泡上升动画关键帧 */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.8) rotate(0deg);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-85vh) scale(1.1) rotate(5deg);
+                opacity: 0;
+            }
+        }
+
+        /* 普通 Toast (保留用于其他提示) */
+        .wish-toast {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 24px;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 13px;
+            opacity: 0;
+            transition: all 0.6s;
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        .wish-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
     </style>
 </head>
 
 <body>
-    <div id="snow-container"></div>
-    <div class="main-wrapper">
+
+    <div class="stars"></div>
+
+    <div id="overlay">
+        <canvas id="fireworks"></canvas>
+
+        <div class="countdown-container" id="loaderRing">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="big-num" id="progressNum">0%</div>
+        </div>
+        <div class="loading-msg" id="loadingMsg">Initializing Timeline...</div>
+    </div>
+
+    <div class="container">
         <header>
-            <h1>🎅 Merry Christmas 🎄</h1>
-            <p>12</p>
+            <h1>2026</h1>
+            <div class="subtitle">The Future is Waiting</div>
         </header>
 
-        <div class="card">
-            <h2>🎥 圣诞魔法生成器</h2>
-            <div class="upload-area">
-                <span id="fileLabel">点击上传照片</span>
-                <input type="file" id="imageInput" accept="image/*" onchange="updateFileName()">
+        <div id="toast" class="wish-toast">Happy New Year!</div>
+
+        <div class="glass-card">
+            <h2><span style="font-size:20px">📽️</span> <span>Cinematic Memory</span></h2>
+            <div class="upload-zone" id="dropZone">
+                <span class="upload-icon">✦</span>
+                <span class="upload-label" id="fileName">Tap to Upload Photo</span>
+                <input type="file" id="imgInput" accept="image/*">
             </div>
-            <button onclick="uploadAndGenerate()" id="videoBtn">✨ 生成魔法视频</button>
-            <div id="videoStatus" style="color:#666"></div>
+            <button class="btn-cinema" onclick="generateVideo()" id="vidBtn">GENERATE SCENE</button>
+            <div class="status-line" id="vidStatus"></div>
             <video id="resultVideo" controls playsinline></video>
         </div>
 
-        <div class="card">
-            <h2>🎙️ 圣诞老人热线</h2>
-            <button id="recordBtn">🎤 按住说话</button>
-            <div id="audioStatus" style="color:#666">准备就绪</div>
-
-            <audio id="audioPlayer" controls playsinline></audio>
+        <div class="glass-card">
+            <h2><span style="font-size:20px">🎙️</span> <span>Santa's Frequency</span></h2>
+            <button class="btn-cinema btn-record" id="recBtn">HOLD TO TRANSMIT</button>
+            <div class="status-line" id="audStatus">Awaiting Signal...</div>
+            <audio id="resultAudio" controls></audio>
         </div>
     </div>
 
     <script>
-        // 雪花特效
-        function createSnow() {
-            const c = document.getElementById('snow-container');
-            for (let i = 0; i < 40; i++) {
-                const s = document.createElement('div');
-                s.className = 'snowflake';
-                const size = Math.random() * 5 + 2;
-                s.style.width = size + 'px'; s.style.height = size + 'px';
-                s.style.left = Math.random() * 100 + 'vw';
-                s.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                s.style.animationDelay = Math.random() * 5 + 's';
-                c.appendChild(s);
-            }
-        }
-        createSnow();
+        // ================= 全局状态 =================
+        let wishes = ["Happy New Year!", "Peace & Joy", "Dream Big in 2026"]; // 默认兜底
+        // 获取愿望数据
+        fetch('/get_new_year_wishes')
+            .then(r => r.json())
+            .then(d => { if (d && d.length) wishes = d; })
+            .catch(e => console.log("Wishes fetch failed, using default."));
 
-        function updateFileName() {
-            const input = document.getElementById('imageInput');
-            if (input.files[0]) document.getElementById('fileLabel').innerText = "📸 " + input.files[0].name;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        async function uploadAndGenerate() {
-            const btn = document.getElementById('videoBtn');
-            const file = document.getElementById('imageInput').files[0];
-            const status = document.getElementById('videoStatus');
-            const vid = document.getElementById('resultVideo');
+        // ================= ✨ 新特性：暖冬愿望气泡逻辑 =================
+        let wishBubbleInterval;
 
-            if (!file) return alert("请先上传照片");
+        function startWishingWell() {
+            const overlay = document.getElementById('overlay');
+            if (!wishes.length) return;
 
-            btn.disabled = true; btn.innerText = "📤 上传中...";
-            vid.style.display = 'none';
+            // 每隔 1.2 秒生成一个上升气泡
+            wishBubbleInterval = setInterval(() => {
+                const bubble = document.createElement('div');
+                bubble.className = 'wish-bubble-riser';
+                // 随机选取一条愿望
+                bubble.innerText = wishes[Math.floor(Math.random() * wishes.length)];
+
+                // 随机化气泡的起始位置、大小和上升速度，制造自然感
+                const randomLeft = Math.random() * 80 + 10; // 屏幕宽度的 10% - 90%
+                const randomDuration = Math.random() * 4 + 7; // 7s - 11s
+                const randomScale = Math.random() * 0.3 + 0.85; // 0.85 - 1.15 大小
+
+                bubble.style.left = `${randomLeft}%`;
+                bubble.style.animation = `floatUp ${randomDuration}s linear forwards`;
+                bubble.style.transform = `scale(${randomScale})`; // 设置初始大小
+
+                overlay.appendChild(bubble);
+
+                // 动画结束后移除 DOM 节点
+                setTimeout(() => { bubble.remove(); }, randomDuration * 1000 + 100);
+            }, 1200);
+        }
+
+        function stopWishingWell() {
+            clearInterval(wishBubbleInterval);
+            // 可选：快速清除剩余气泡
+            // document.querySelectorAll('.wish-bubble-riser').forEach(el => el.remove());
+        }
+
+        // ================= 核心业务：视频生成 =================
+        async function generateVideo() {
+            const file = document.getElementById('imgInput').files[0];
+            if (!file) return showToast("⚠ Please select an image first");
+
+            const overlay = document.getElementById('overlay');
+            const numDisplay = document.getElementById('progressNum');
+            const msgDisplay = document.getElementById('loadingMsg');
+            const ring = document.getElementById('loaderRing');
+
+            // 1. 开启沉浸式遮罩
+            overlay.style.display = 'flex';
+            ring.style.display = 'flex';
+            numDisplay.innerText = "0%";
+            msgDisplay.innerText = "Initializing Timeline...";
+
+            // 2. ✨ 开始释放愿望气泡
+            startWishingWell();
+
+            // 虚假进度动画
+            let progress = 0;
+            const timer = setInterval(() => {
+                if (progress < 95) {
+                    progress += Math.floor(Math.random() * 2 + 1);
+                    if (progress > 95) progress = 95;
+                    numDisplay.innerText = progress + "%";
+                }
+                if (progress > 20 && progress < 50) msgDisplay.innerText = "Weaving Dreams & Memories...";
+                if (progress >= 50 && progress < 80) msgDisplay.innerText = "Rendering Cinematic Light...";
+                if (progress >= 80) msgDisplay.innerText = "Finalizing 2026 Magic...";
+            }, 250);
 
             const fd = new FormData(); fd.append('image', file);
 
             try {
-                const res = await fetch('/generate_video', { method: 'POST', body: fd });
-                const data = await res.json();
-                if (data.id) {
-                    status.innerText = "✅ 任务已提交，正在制作...";
-                    poll(data.id);
-                } else throw new Error(data.error);
+                const initRes = await fetch('/generate_video', { method: 'POST', body: fd });
+                const initData = await initRes.json();
+
+                if (initData.id) {
+                    const poll = setInterval(async () => {
+                        const checkRes = await fetch(`/check_video_status?task_id=${initData.id}`);
+                        const checkData = await checkRes.json();
+
+                        if (checkData.status === 'SUCCEEDED') {
+                            clearInterval(poll); clearInterval(timer);
+                            // 成功！播放庆祝动画
+                            playSuccessSequence(checkData.result.video_url);
+                        } else if (checkData.status === 'FAILED') {
+                            clearInterval(poll); clearInterval(timer); stopWishingWell();
+                            overlay.style.display = 'none';
+                            alert("Generation Failed: " + (checkData.error || "Unknown"));
+                        }
+                    }, 3000);
+                } else { throw new Error(initData.error || "Init Failed"); }
             } catch (e) {
-                status.innerText = "❌ " + e.message;
-                btn.disabled = false; btn.innerText = "✨ 生成魔法视频";
+                clearInterval(timer); stopWishingWell();
+                overlay.style.display = 'none'; showToast("Error: " + e.message);
             }
         }
 
-        async function poll(taskId) {
-            const status = document.getElementById('videoStatus');
-            const vid = document.getElementById('resultVideo');
-            const interval = setInterval(async () => {
-                try {
-                    const res = await fetch(`/check_video_status?task_id=${taskId}`);
-                    const data = await res.json();
+        // 🎆 成功瞬间的庆祝动画序列
+        function playSuccessSequence(videoUrl) {
+            const num = document.getElementById('progressNum');
+            const ring = document.getElementById('loaderRing');
+            const msg = document.getElementById('loadingMsg');
 
-                    if (data.status === 'SUCCEEDED') {
-                        clearInterval(interval);
-                        status.innerText = "🎉 魔法完成！";
-                        vid.src = data.result.video_url;
-                        vid.style.display = 'block';
-                        // 视频自动播放尝试
-                        vid.play().catch(e => console.log("Video Auto-play blocked"));
-                        document.getElementById('videoBtn').disabled = false;
-                        document.getElementById('videoBtn').innerText = "✨ 再做一张";
-                    } else if (data.status === 'FAILED') {
-                        clearInterval(interval);
-                        status.innerText = "❌ 失败: " + data.error;
-                        document.getElementById('videoBtn').disabled = false;
-                    } else {
-                        status.innerText = "⏳ 制作中... (" + data.status + ")";
-                    }
-                } catch (e) { console.error(e); }
-            }, 3000);
+            // 1. 更新文字状态
+            num.innerText = "2026";
+            msg.innerText = "Happy New Year!";
+
+            // 2. 隐藏加载环，停止生成新气泡
+            ring.style.display = 'none';
+            stopWishingWell();
+
+            // 3. 🎆 触发烟花盛放 (Bloom Animation)
+            // 调整了烟花参数，使其在成功瞬间更密集、更绚丽
+            launchFireworks(true);
+
+            // 4. 延迟关闭遮罩，展示结果
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'none';
+                const v = document.getElementById('resultVideo');
+                v.src = videoUrl; v.style.display = 'block'; v.play();
+                document.getElementById('vidBtn').innerText = "CREATE ANOTHER";
+                document.getElementById('vidStatus').innerText = "Memory Stored in the Cloud";
+            }, 4000); // 给予足够时间欣赏烟花
         }
 
-        // ================= 语音逻辑 (核心修复) =================
-        const recBtn = document.getElementById('recordBtn');
-        const audStatus = document.getElementById('audioStatus');
-        let recorder, chunks = [];
+        // ================= 物理烟花引擎 (优化版) =================
+        function launchFireworks(isBloom = false) {
+            const canvas = document.getElementById('fireworks');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            let particles = [];
 
-        async function initAudio() {
+            // 调整为更符合主题的金色、紫罗兰色系
+            const colors = ['#FFD700', '#FFEC8B', '#BC13FE', '#D46AFF', '#FFFFFF'];
+
+            class Particle {
+                constructor(x, y, color, bloomMode) {
+                    this.x = x; this.y = y; this.color = color;
+                    const angle = Math.random() * Math.PI * 2;
+                    // Bloom 模式下爆炸速度更快，范围更大
+                    const speedBase = bloomMode ? 8 : 5;
+                    const speed = Math.random() * speedBase + 2;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.015 + 0.008;
+                    this.gravity = 0.04;
+                }
+                update() {
+                    this.vx *= 0.98; this.vy *= 0.98; this.vy += this.gravity;
+                    this.x += this.vx; this.y += this.vy; this.alpha -= this.decay;
+                }
+                draw(ctx) {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color;
+                    // 添加发光效果
+                    ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+                    ctx.beginPath(); ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            function explode(x, y, bloomMode) {
+                // Bloom 模式下粒子数量加倍
+                const count = bloomMode ? 150 : 80;
+                for (let i = 0; i < count; i++) {
+                    particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)], bloomMode));
+                }
+            }
+
+            // 自动连放逻辑
+            let count = 0;
+            const maxFires = isBloom ? 12 : 1; // 成功时连放12发，平时不放
+
+            const fireInterval = setInterval(() => {
+                // 在屏幕中心偏上区域随机爆炸
+                explode(
+                    window.innerWidth / 2 + (Math.random() - 0.5) * window.innerWidth * 0.4,
+                    window.innerHeight * 0.3 + (Math.random() - 0.5) * window.innerHeight * 0.2,
+                    isBloom
+                );
+                count++;
+                if (count >= maxFires) clearInterval(fireInterval);
+            }, 300); // 每300ms放一发
+
+            function loop() {
+                // 使用 destination-out 制造拖尾效果
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.globalCompositeOperation = 'lighter';
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update(); particles[i].draw(ctx);
+                    if (particles[i].alpha <= 0) particles.splice(i, 1);
+                }
+                if (particles.length > 0 || count < maxFires) requestAnimationFrame(loop);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height); // 清理画布
+            }
+            loop();
+        }
+
+        // ================= 文件交互与音频逻辑 (保持不变) =================
+        document.getElementById('imgInput').onchange = function () {
+            if (this.files[0]) {
+                document.getElementById('fileName').innerText = this.files[0].name;
+                document.getElementById('dropZone').classList.add('active');
+            }
+        };
+
+        const recBtn = document.getElementById('recBtn');
+        let recorder, chunks = [];
+        recBtn.addEventListener('touchstart', async (e) => {
+            e.preventDefault(); recBtn.style.transform = "scale(0.95)";
+            recBtn.style.borderColor = "var(--neon-purple)"; recBtn.innerText = "LISTENING...";
+            chunks = [];
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 recorder = new MediaRecorder(stream);
                 recorder.ondataavailable = e => chunks.push(e.data);
-                recorder.onstop = sendAudio;
-            } catch (e) {
-                audStatus.innerText = "❌ 无法访问麦克风";
-            }
-        }
-        initAudio();
-
-        async function sendAudio() {
-            const blob = new Blob(chunks, { type: 'audio/webm' });
-            chunks = [];
-            audStatus.innerText = "🎅 思考中...";
-
-            const fd = new FormData(); fd.append('audio', blob);
-            try {
-                const res = await fetch('/process_audio', { method: 'POST', body: fd });
-                if (res.ok) {
-                    // 获取音频 Blob
-                    const audBlob = await res.blob();
-                    const url = URL.createObjectURL(audBlob);
-
-                    const player = document.getElementById('audioPlayer');
-                    player.src = url;
-
-                    // 🚨 显示播放器！即使自动播放失败，用户也能看到控件并点击播放
-                    player.style.display = 'block';
-
-                    // 尝试自动播放，如果失败则提示用户
-                    player.play().catch(e => {
-                        console.log("Auto-play blocked, waiting for user interaction");
-                        audStatus.innerText = "🎄 请点击下方播放器收听！";
-                    });
-
-                    audStatus.innerText = "🎄 收到回复！";
-                } else {
-                    audStatus.innerText = "❌ 圣诞老人掉线了";
-                }
-            } catch (e) {
-                console.error(e);
-                audStatus.innerText = "❌ 网络错误";
-            }
-        }
-
-        // 按钮事件绑定
-        function start(e) {
-            if (e.cancelable) e.preventDefault();
-            if (recorder && recorder.state === 'inactive') {
-                chunks = []; recorder.start();
-                recBtn.innerText = "👂 正在聆听...";
-                recBtn.classList.add('pressing');
-                audStatus.innerText = "松开按钮发送";
-            }
-        }
-        function stop(e) {
-            if (e.cancelable) e.preventDefault();
+                recorder.start();
+            } catch (e) { showToast("Microphone access needed"); }
+        });
+        recBtn.addEventListener('touchend', (e) => {
+            e.preventDefault(); recBtn.style.transform = "scale(1)";
+            recBtn.style.borderColor = "rgba(255,255,255,0.1)"; recBtn.innerText = "HOLD TO TRANSMIT";
             if (recorder && recorder.state === 'recording') {
                 recorder.stop();
-                recBtn.innerText = "🎤 按住说话";
-                recBtn.classList.remove('pressing');
+                recorder.onstop = async () => {
+                    document.getElementById('audStatus').innerText = "Transmitting to North Pole...";
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    const fd = new FormData(); fd.append('audio', blob);
+                    try {
+                        const res = await fetch('/process_audio', { method: 'POST', body: fd });
+                        if (res.ok) {
+                            const blobResp = await res.blob();
+                            const url = URL.createObjectURL(blobResp);
+                            const aud = document.getElementById('resultAudio');
+                            aud.src = url; aud.style.display = 'block'; aud.play();
+                            document.getElementById('audStatus').innerText = "Signal Received 🎄";
+                        } else { document.getElementById('audStatus').innerText = "Transmission Interrupted"; }
+                    } catch (e) { console.error(e); }
+                };
             }
-        }
-
-        recBtn.addEventListener('touchstart', start, { passive: false });
-        recBtn.addEventListener('touchend', stop, { passive: false });
-        recBtn.addEventListener('mousedown', start);
-        recBtn.addEventListener('mouseup', stop);
+        });
     </script>
 </body>
 
