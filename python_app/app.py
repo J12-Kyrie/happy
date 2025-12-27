@@ -7,15 +7,17 @@ import urllib3
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from openai import OpenAI
 from volcenginesdkarkruntime import Ark
+# 引入图像处理库
+from PIL import Image
 
-# 禁用不安全请求警告（因为我们会使用 verify=False）
+# 禁用 SSL 警告
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
 
 # ================= 配置区域 =================
-# ⚠️ 请确保这是你最新的 Pinggy 地址 (https开头)
-PINGGY_URL = "https://tbzng-2409-8d1e-6910-338-901e-4c8-23c6-bd3c.a.free.pinggy.link"
+# ⚠️ 请务必确保这是你最新的 Pinggy 地址 (https开头)
+PINGGY_URL = "https://iqvzl-2409-8d1e-6910-338-901e-4c8-23c6-bd3c.a.free.pinggy.link"
 
 VOLC_API_KEY = "d61f814f-8733-42bd-b1e3-8a07bc1e1791"
 # 初始化方舟客户端
@@ -42,54 +44,57 @@ def uploaded_file(filename):
     response.headers['ngrok-skip-browser-warning'] = 'true'
     return response
 
-# ================== 核心修复：多重冗余图床上传 ==================
+# ================== 核心功能：图片智能压缩 ==================
+def compress_image(input_path, output_path, max_size_kb=300):
+    """
+    将图片压缩到指定大小（默认300KB以下），并统一转为JPEG。
+    这能极大提高跨国传输的成功率。
+    """
+    try:
+        with Image.open(input_path) as img:
+            # 1. 转换模式，去除透明通道 (JPEG不支持透明)
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+            
+            # 2. 限制最大分辨率 (例如最大宽/高 1024px)
+            img.thumbnail((1024, 1024))
+            
+            # 3. 循环降低质量直到满足大小
+            quality = 85
+            while quality > 10:
+                img.save(output_path, "JPEG", quality=quality)
+                if os.path.getsize(output_path) / 1024 <= max_size_kb:
+                    break
+                quality -= 10
+            
+        print(f"📉 图片已压缩: {os.path.getsize(input_path)//1024}KB -> {os.path.getsize(output_path)//1024}KB")
+        return True
+    except Exception as e:
+        print(f"⚠️ 图片压缩失败: {e}")
+        return False
+
+# ================== 核心功能：极速图床上传 ==================
 def upload_to_bridge_host(file_path):
     """
-    尝试上传到公共图床，彻底解决 SSL 报错和内网穿透超时问题。
-    策略：Catbox (主) -> Vim-cn (备) -> 失败
+    尝试上传到 vim-cn，超时时间极短(3s)，失败立即跳过，绝不拖慢网站。
     """
-    print(f"🚀 启动图片中转上传流程...")
-    
-    # 方案 A: Catbox.moe (全球稳定，推荐)
+    print(f"🚀 尝试极速上传图床...")
     try:
-        print("   正在尝试上传到 Catbox...")
         with open(file_path, 'rb') as f:
-            # reqtype=fileupload 是 Catbox 的 API 规范
-            # verify=False 彻底解决 SSLEOFError
-            response = requests.post(
-                'https://catbox.moe/user/api.php', 
-                data={'reqtype': 'fileupload'}, 
-                files={'fileToUpload': f},
-                verify=False, 
-                timeout=60
-            )
-            if response.status_code == 200:
-                url = response.text.strip()
-                if url.startswith('http'):
-                    print(f"✅ Catbox 上传成功: {url}")
-                    return url
-    except Exception as e:
-        print(f"⚠️ Catbox 上传失败: {e}")
-
-    # 方案 B: Vim-cn (极简，备用)
-    try:
-        print("   正在尝试上传到 Vim-cn...")
-        with open(file_path, 'rb') as f:
-            # 同样禁用 SSL 验证
+            # verify=False 解决 SSLEOFError
+            # timeout=3 解决网站卡顿
             response = requests.post(
                 'https://img.vim-cn.com/', 
                 files={'name': f}, 
                 verify=False, 
-                timeout=60
+                timeout=3 
             )
             if response.status_code == 200:
                 url = response.text.strip().replace('http://', 'https://')
-                print(f"✅ Vim-cn 上传成功: {url}")
+                print(f"✅ 图床秒传成功: {url}")
                 return url
     except Exception as e:
-        print(f"⚠️ Vim-cn 上传失败: {e}")
-
-    print("❌ 所有图床均上传失败，将回退到 Pinggy (可能导致 Timeout)")
+        print(f"⚠️ 图床跳过 (不影响流程): {e}")
     return None
 
 # ================= 任务 1: 视频生成 =================
@@ -99,22 +104,32 @@ def generate_video():
         return jsonify({"error": "没有上传图片"}), 400
     
     file = request.files['image']
-    filename = f"vid_src_{int(time.time())}_{file.filename}"
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(file_path)
+    # 保存原图
+    original_filename = f"src_{int(time.time())}_{file.filename}"
+    original_path = os.path.join(UPLOAD_FOLDER, original_filename)
+    file.save(original_path)
 
-    # 1. 执行中转上传 (这是成功的关键)
-    bridge_url = upload_to_bridge_host(file_path)
+    # 1. 【关键步骤】生成压缩版图片
+    # 只有压缩后的图片才适合在不稳定网络下传输
+    compressed_filename = f"min_{original_filename}.jpg"
+    compressed_path = os.path.join(UPLOAD_FOLDER, compressed_filename)
     
-    # 2. 决策最终 URL
-    if bridge_url:
-        final_image_url = bridge_url
+    if compress_image(original_path, compressed_path):
+        target_path = compressed_path
+        target_filename = compressed_filename
     else:
-        # 只有图床全挂了才用 Pinggy
+        target_path = original_path
+        target_filename = original_filename
+
+    # 2. 尝试图床中转 (优先使用)
+    final_image_url = upload_to_bridge_host(target_path)
+    
+    # 3. 如果图床失败，回退到 Pinggy (但这次我们用的是压缩图，成功率极高！)
+    if not final_image_url:
         public_url = PINGGY_URL.rstrip('/')
-        final_image_url = f"{public_url}/uploads/{filename}"
+        final_image_url = f"{public_url}/uploads/{target_filename}"
         
-    print(f"🌍 API 最终使用图片地址: {final_image_url}")
+    print(f"🌍 最终提交给 API 的图片地址: {final_image_url}")
 
     prompt_text = "基于参考图片生成视频，场景转换为温暖的北欧圣诞氛围。一位快乐、传统的圣诞老人带着魔法光环笑着步入画面，神奇地将红白圣诞帽戴在每个人的头上。雪花轻柔飘落，电影质感，高清晰度，暖色调。 --duration 5 --camerafixed false --watermark false"
 
@@ -161,6 +176,7 @@ def check_video_status():
 # ================= 任务 2: 语音处理 =================
 def convert_webm_to_mp3(input_path, output_path):
     try:
+        # 增加 -loglevel error 减少日志垃圾
         command = ['ffmpeg', '-y', '-i', input_path, '-vn', '-acodec', 'libmp3lame', '-q:a', '2', '-loglevel', 'error', output_path]
         subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
